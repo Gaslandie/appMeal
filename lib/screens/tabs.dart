@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meals/models/meal.dart';
 import 'package:meals/screens/categories.dart';
+import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/widgets/main_drawer.dart';
 
@@ -53,7 +54,12 @@ class _TabsScreen extends State<TabsScreen> {
 
   //fonction pour naviguer vers nos screens depuis le drawer
   void _setScreen(String indentifier) {
+    Navigator.of(context).pop();
     if (indentifier == 'filters') {
+      Navigator.of(
+        context,
+        //pushReplacement different de push car , il remplace le sceen precedent au lieu de l'ajouter dans la pile de screens
+      ).push(MaterialPageRoute(builder: (ctx) => FiltersScreen()));
     } else {
       //si on clique sur meals et qu'on a ouvert le drawer depuis meal on ne navigue pas mais juste fermer le drawer
       Navigator.of(context).pop();
@@ -76,7 +82,7 @@ class _TabsScreen extends State<TabsScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: Text(activePageTitle)),
-      drawer: MainDrawer(onselectScreen: _setScreen,),
+      drawer: MainDrawer(onselectScreen: _setScreen),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
