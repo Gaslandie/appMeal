@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meals/data/dummy_data.dart';
 import 'package:meals/models/meal.dart';
 import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
@@ -7,6 +6,7 @@ import 'package:meals/screens/meals.dart';
 import 'package:meals/widgets/main_drawer.dart';
 import 'package:meals/providers/meals_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals/providers/favorites_provider.dart';
 
 //valeurs initiales des filtres(tous desactivés)
 const kInitialFilters = {
@@ -30,38 +30,8 @@ class _TabsScreen extends ConsumerState<TabsScreen> {
   //et ici ConsumerState au lieu de State pour l'utilisation de notre provider
   int _selectedPageIndex =
       0; //index de la page selectionnée dans la barre de navigation du bas
-  final List<Meal> _favoriteMeals = [];
   Map<Filter, bool> _selectedFilters =
       kInitialFilters; //filtres selectionnés par l'utilisateur
-
-  //afficher message quand on ajoute ou retire un plat des favoris à l'aide de Snackbar
-  void _showInfoMessage(String message) {
-    //faire disparaitre un snackbar existant pour eviter superposition
-    ScaffoldMessenger.of(context).clearSnackBars();
-    //notre snackBar avec le message passé en paramètre
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  //fonction pour retirer ou ajouter un plat dans favoris en appuyant le button star
-  void _toggleMealFavoriteStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-
-    if (isExisting) {
-      //on le retire sil est deja favoris
-      setState(() {
-        _favoriteMeals.remove(meal);
-        _showInfoMessage('Meal is no longer a favorite');
-      });
-    } else {
-      //on l'ajoute s'il ne l'est pas
-      setState(() {
-        _favoriteMeals.add(meal);
-        _showInfoMessage('Marked as a favorite');
-      });
-    }
-  }
 
   //change la page affichée en fonction de ce qui est cliqué dans la barre du bas
   void _selectPage(int index) {
@@ -92,7 +62,9 @@ class _TabsScreen extends ConsumerState<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final meals = ref.watch(mealsProvider); // ref watch pour observer notre mealsProvider et le mettre à jour dès quil ya changement
+    final meals = ref.watch(
+      mealsProvider,
+    ); // ref watch pour observer notre mealsProvider et le mettre à jour dès quil ya changement
     //filtre la liste des plats selon les filtres selectionné
     final availableMeals = meals.where((meal) {
       // Si le filtre "sans gluten" est activé et que le plat n'est pas sans gluten, on l'exclut
@@ -117,16 +89,15 @@ class _TabsScreen extends ConsumerState<TabsScreen> {
 
     //Determine la page à afficher selon l'onglet séléctionné
     Widget activePage = CategoriesScreen(
-      onToggleFavorite: _toggleMealFavoriteStatus,
       availableMeals: availableMeals,
     );
     var activePageTitle = 'Categories';
 
     if (_selectedPageIndex == 1) {
+      final favoriteMeals = ref.watch(favoriteMealsProvider);
       //si l'onglet 'Favorites" est selectionné,, on affiche la liste des favoris
       activePage = MealsScreen(
-        meals: _favoriteMeals,
-        onToggleFavorite: _toggleMealFavoriteStatus,
+        meals: favoriteMeals,
       );
       activePageTitle = 'Your Favorites';
     }

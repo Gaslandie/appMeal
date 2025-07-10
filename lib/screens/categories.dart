@@ -7,9 +7,8 @@ import 'package:meals/widgets/category_grid_item.dart';
 
 //Stateless car on a aura pas à gerer de state
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key, required this.onToggleFavorite,required this.availableMeals});
+  const CategoriesScreen({super.key,required this.availableMeals});
 
-  final void Function(Meal meal) onToggleFavorite;
   final List<Meal> availableMeals;
 
   //au clic envoyé vers le contenu de la categorie cliquée
@@ -22,7 +21,6 @@ class CategoriesScreen extends StatelessWidget {
         builder: (ctx) => MealsScreen(
           title: category.title,
           meals: filteredMeals,
-          onToggleFavorite: onToggleFavorite,
         ),
       ),
     );
