@@ -5,6 +5,8 @@ import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/widgets/main_drawer.dart';
+import 'package:meals/providers/meals_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //valeurs initiales des filtres(tous desactivés)
 const kInitialFilters = {
@@ -14,18 +16,23 @@ const kInitialFilters = {
   Filter.vegan: false,
 };
 
-class TabsScreen extends StatefulWidget {
+//on remplace StatefulWidget par ConsumerStatefulWidget pour utiliser notre provider(riverpod)
+// et ça serait ConsumerWidget pour remplacer un StatelessWidget
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
   @override
-  State<TabsScreen> createState() {
+  ConsumerState<TabsScreen> createState() {
     return _TabsScreen();
   }
 }
 
-class _TabsScreen extends State<TabsScreen> {
-  int _selectedPageIndex = 0; //index de la page selectionnée dans la barre de navigation du bas
+class _TabsScreen extends ConsumerState<TabsScreen> {
+  //et ici ConsumerState au lieu de State pour l'utilisation de notre provider
+  int _selectedPageIndex =
+      0; //index de la page selectionnée dans la barre de navigation du bas
   final List<Meal> _favoriteMeals = [];
-  Map<Filter, bool> _selectedFilters = kInitialFilters; //filtres selectionnés par l'utilisateur
+  Map<Filter, bool> _selectedFilters =
+      kInitialFilters; //filtres selectionnés par l'utilisateur
 
   //afficher message quand on ajoute ou retire un plat des favoris à l'aide de Snackbar
   void _showInfoMessage(String message) {
@@ -55,6 +62,7 @@ class _TabsScreen extends State<TabsScreen> {
       });
     }
   }
+
   //change la page affichée en fonction de ce qui est cliqué dans la barre du bas
   void _selectPage(int index) {
     setState(() {
@@ -84,8 +92,9 @@ class _TabsScreen extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final meals = ref.watch(mealsProvider); // ref watch pour observer notre mealsProvider et le mettre à jour dès quil ya changement
     //filtre la liste des plats selon les filtres selectionné
-    final availableMeals = dummyMeals.where((meal) {
+    final availableMeals = meals.where((meal) {
       // Si le filtre "sans gluten" est activé et que le plat n'est pas sans gluten, on l'exclut
       if (_selectedFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
         return false;
@@ -124,11 +133,11 @@ class _TabsScreen extends State<TabsScreen> {
     // Structure principale de la page avec AppBar, Drawer, contenu et barre de navigation du bas
     return Scaffold(
       appBar: AppBar(title: Text(activePageTitle)),
-      drawer: MainDrawer(onselectScreen: _setScreen),//menu lateral
-      body: activePage,//Contenu principal(liste des categories ou favoris)
+      drawer: MainDrawer(onselectScreen: _setScreen), //menu lateral
+      body: activePage, //Contenu principal(liste des categories ou favoris)
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage, //Change l'onglet sélectionné
-        currentIndex: _selectedPageIndex,//Onglet actuellement sélectionné
+        currentIndex: _selectedPageIndex, //Onglet actuellement sélectionné
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.set_meal),

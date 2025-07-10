@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meals/screens/tabs.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //theme de notre page
 final theme = ThemeData(
@@ -14,7 +15,9 @@ final theme = ThemeData(
 
 //point d'entrée de notre app
 void main() {
-  runApp(const App());
+  runApp(
+    const ProviderScope(child: App()),
+  ); //indispensable notre ProviderScope pour pouvoir gerer nos etat à travers nos widgets
 }
 
 //notre App
@@ -23,9 +26,6 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: theme,
-      home: const TabsScreen(),
-    );
+    return MaterialApp(theme: theme, home: const TabsScreen());
   }
 }
