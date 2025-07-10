@@ -3,7 +3,6 @@ import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/widgets/main_drawer.dart';
-import 'package:meals/providers/meals_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals/providers/favorites_provider.dart';
 import 'package:meals/providers/filters_provider.dart';
@@ -53,31 +52,7 @@ class _TabsScreen extends ConsumerState<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final meals = ref.watch(
-      mealsProvider,
-    ); // ref watch pour observer notre mealsProvider et le mettre à jour dès quil ya changement
-    //filtre la liste des plats selon les filtres selectionné
-    final activeFilters = ref.watch(filtersProvider);
-    final availableMeals = meals.where((meal) {
-      // Si le filtre "sans gluten" est activé et que le plat n'est pas sans gluten, on l'exclut
-      if (activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-        return false;
-      }
-      // Si le filtre "sans lactose" est activé et que le plat n'est pas sans lactose, on l'exclut
-      if (activeFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-        return false;
-      }
-      // Si le filtre "végétarien" est activé et que le plat n'est pas végétarien, on l'exclut
-      if (activeFilters[Filter.vegetarian]! && !meal.isVegetarian) {
-        return false;
-      }
-      // Si le filtre "vegan" est activé et que le plat n'est pas vegan, on l'exclut
-      if (activeFilters[Filter.vegan]! && !meal.isVegan) {
-        return false;
-      }
-      // Si aucun des filtres n'exclut ce plat, on le garde
-      return true;
-    }).toList(); // On convertit le résultat en liste
+    final availableMeals = ref.watch(filterdMealsProvider);
 
     //Determine la page à afficher selon l'onglet séléctionné
     Widget activePage = CategoriesScreen(availableMeals: availableMeals);
