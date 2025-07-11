@@ -35,18 +35,21 @@ class MealItem extends StatelessWidget {
         child: Stack(
           //Stack permet de superposer plusieurs widgets les uns sur les autres
           children: [
-            FadeInImage(
-              //Affiche une image avec un effet de fondu lors du chargement
-              placeholder: MemoryImage(
-                kTransparentImage,
-              ), //image transparente affichée en attendant le chargement
-              image: NetworkImage(
-                meal.imageUrl,
-              ), //Image principale chargée depuis une Url
-              fit: BoxFit
-                  .cover, //l'image est agrandie pour couvrir tout l'espace disponible,quitte à etre coupée si necessaire
-              height: 200,
-              width: double.infinity,
+            Hero(
+              tag:meal.id,
+              child: FadeInImage(
+                //Affiche une image avec un effet de fondu lors du chargement
+                placeholder: MemoryImage(
+                  kTransparentImage,
+                ), //image transparente affichée en attendant le chargement
+                image: NetworkImage(
+                  meal.imageUrl,
+                ), //Image principale chargée depuis une Url
+                fit: BoxFit
+                    .cover, //l'image est agrandie pour couvrir tout l'espace disponible,quitte à etre coupée si necessaire
+                height: 200,
+                width: double.infinity,
+              ),
             ),
             //pour positionner un widget à un endroit precis dans la stack
             //place le widget en bas, etendu de gauche à droite
